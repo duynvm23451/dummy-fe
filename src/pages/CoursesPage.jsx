@@ -2,12 +2,15 @@ import React, { useMemo, useRef } from "react";
 import { useNavigate, useRouteLoaderData } from "react-router-dom";
 import useGetData from "../hooks/useGetData";
 import {
+  enrollment,
   getLoggedInUser,
   listRegistedCourses,
   listUnregisterdCourses,
 } from "../utils/http";
 import { IoSearchOutline } from "react-icons/io5";
 import { TbFileDescription } from "react-icons/tb";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { FaRegBell } from "react-icons/fa";
 const CoursesPage = () => {
@@ -19,7 +22,7 @@ const CoursesPage = () => {
     }),
     [token]
   );
-  const { data } = useGetData(getLoggedInUser, queryParams);
+  const { data: student } = useGetData(getLoggedInUser, queryParams);
   const { data: registedCourses } = useGetData(
     listRegistedCourses,
     queryParams
@@ -29,16 +32,41 @@ const CoursesPage = () => {
     queryParams
   );
 
-  if (!data || !registedCourses || !unRegistedCourses) {
+  if (!student || !registedCourses || !unRegistedCourses) {
     return <p>No data found</p>;
+  }
+
+  const handleRegisterCourse = async (courseId) => {
+    try {
+      console.log(student);
+        const params = {
+          student_id: student.id,
+          course_id: courseId,
+          token,
+        }
+
+         const data = await enrollment(params);
+         toast.success(data.message, {
+           position: "bottom-right",
+         });
+         window.location.reload();
+
+       } catch (error) {
+         console.error(error);
+         const errorData = error.response?.data;
+         toast.error(errorData?.message || "An error occurred", {
+           position: "bottom-right",
+         });
+       }
   }
 
   return (
     <div className="mx-8 my-4">
+      <ToastContainer />
       <div className=" bg-theme-gray rounded-lg">
         <div className="p-4 flex justify-between">
           <div>
-            <h2 className="uppercase font-semibold">Xin chào {data.name}</h2>
+            <h2 className="uppercase font-semibold">Xin chào {student.name}</h2>
             <p className="text-gray-500">
               Hãy cùng nhau học tiếng nhật nào !!!
             </p>
@@ -113,7 +141,7 @@ const CoursesPage = () => {
                 </p>
                 <p>{el.description}</p>
               </div>
-              <button className="bg-theme-red text-theme-white border-2 border-theme-black w-full rounded-lg mt-8 py-2 font-semibold">
+              <button onClick={() => handleRegisterCourse(el.id)} className="bg-theme-red text-theme-white border-2 border-theme-black w-full rounded-lg mt-8 py-2 font-semibold">
                 Đăng kí học
               </button>
             </div>
