@@ -39,26 +39,25 @@ const CoursesPage = () => {
   const handleRegisterCourse = async (courseId) => {
     try {
       console.log(student);
-        const params = {
-          student_id: student.id,
-          course_id: courseId,
-          token,
-        }
+      const params = {
+        student_id: student.id,
+        course_id: courseId,
+        token,
+      };
 
-         const data = await enrollment(params);
-         toast.success(data.message, {
-           position: "bottom-right",
-         });
-         window.location.reload();
-
-       } catch (error) {
-         console.error(error);
-         const errorData = error.response?.data;
-         toast.error(errorData?.message || "An error occurred", {
-           position: "bottom-right",
-         });
-       }
-  }
+      const data = await enrollment(params);
+      toast.success(data.message, {
+        position: "bottom-right",
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      const errorData = error.response?.data;
+      toast.error(errorData?.message || "An error occurred", {
+        position: "bottom-right",
+      });
+    }
+  };
 
   return (
     <div className="mx-8 my-4">
@@ -94,22 +93,26 @@ const CoursesPage = () => {
       </div>
       <div className="p-4 bg-theme-gray rounded-lg mt-6">
         <h2 className="text-xl font-semibold">Khóa học của tôi</h2>
-        <div className="mt-6 flex gap-4">
+        <div className="mt-6 flex gap-4 overflow-x-scroll">
           {registedCourses.map((el) => (
-            <div className="px-6 py-4 bg-theme-white border-2 border-theme-black rounded-xl w-72">
-              <div className="flex items-center">
-                <div className="p-4 rounded-full bg-theme-pink font-semibold">
-                  {el.level}
+            <div className="px-6 py-4 bg-theme-white border-2 border-theme-black rounded-xl min-w-64 max-w-64 flex flex-col justify-between">
+              <div>
+                {" "}
+                <div className="flex items-center">
+                  <div className="p-4 rounded-full bg-theme-pink font-semibold">
+                    {el.level}
+                  </div>
+                  <h2 className="ml-4 text-lg font-semibold">{el.title}</h2>
                 </div>
-                <h2 className="ml-4 text-lg font-semibold">{el.title}</h2>
+                <div className="bg-theme-beige p-4 mt-4 rounded-lg">
+                  <p className="flex items-center mb-2">
+                    <TbFileDescription className="w-6 h-6 mr-2" />
+                    Mô tả
+                  </p>
+                  <p>{el.description}</p>
+                </div>
               </div>
-              <div className="bg-theme-beige p-4 mt-4 rounded-lg">
-                <p className="flex items-center mb-2">
-                  <TbFileDescription className="w-6 h-6 mr-2" />
-                  Mô tả
-                </p>
-                <p>{el.description}</p>
-              </div>
+
               <button
                 onClick={() => {
                   navigate("/courses/" + el.id);
@@ -125,23 +128,29 @@ const CoursesPage = () => {
 
       <div className="p-4 bg-theme-gray rounded-lg mt-6">
         <h2 className="text-xl font-semibold">Khám phá khóa học</h2>
-        <div className="mt-6 flex gap-4">
+        <div className="mt-6 flex gap-4 overflow-x-scroll">
           {unRegistedCourses.map((el) => (
-            <div className="px-6 py-4 bg-theme-white border-2 border-theme-black rounded-xl w-72">
-              <div className="flex items-center">
-                <div className="p-4 rounded-full bg-theme-pink font-semibold">
-                  {el.level}
+            <div className="px-6 py-4 bg-theme-white border-2 border-theme-black rounded-xl min-w-64 max-w-64 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center">
+                  <div className="p-4 rounded-full bg-theme-pink font-semibold">
+                    {el.level}
+                  </div>
+                  <h2 className="ml-4 text-lg font-semibold">{el.title}</h2>
                 </div>
-                <h2 className="ml-4 text-lg font-semibold">{el.title}</h2>
+                <div className="bg-theme-beige p-4 mt-4 rounded-lg">
+                  <p className="flex items-center mb-2">
+                    <TbFileDescription className="w-6 h-6 mr-2" />
+                    Mô tả
+                  </p>
+                  <p>{el.description}</p>
+                </div>
               </div>
-              <div className="bg-theme-beige p-4 mt-4 rounded-lg">
-                <p className="flex items-center mb-2">
-                  <TbFileDescription className="w-6 h-6 mr-2" />
-                  Mô tả
-                </p>
-                <p>{el.description}</p>
-              </div>
-              <button onClick={() => handleRegisterCourse(el.id)} className="bg-theme-red text-theme-white border-2 border-theme-black w-full rounded-lg mt-8 py-2 font-semibold">
+
+              <button
+                onClick={() => handleRegisterCourse(el.id)}
+                className="bg-theme-red text-theme-white border-2 border-theme-black w-full rounded-lg mt-8 py-2 font-semibold"
+              >
                 Đăng kí học
               </button>
             </div>

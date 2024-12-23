@@ -55,6 +55,10 @@ const CourseDetailPage = () => {
   );
   const { data: lesson } = useGetData(getLessonDetail, queryParamsLessons);
 
+  useEffect(() => {
+    console.log("Fetched Lesson Data:", lesson);
+  }, [lesson]);
+
   const videoRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -63,6 +67,12 @@ const CourseDetailPage = () => {
       setCurrentTime(videoRef.current.currentTime); // Update the current time in seconds
     }
   };
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load(); // Reload the video source
+    }
+  }, [lesson?.video_url]);
 
   const colorsCode = [
     "#FD8A8A",
@@ -157,7 +167,7 @@ const CourseDetailPage = () => {
             <div className="bg-theme-gray rounded-lg pb-4">
               <video
                 ref={videoRef}
-                class="h-full w-full rounded-lg"
+                class="max-h-[32rem] w-full rounded-lg"
                 controls
                 onTimeUpdate={handleTimeUpdate}
               >
@@ -253,9 +263,9 @@ const CourseDetailPage = () => {
                       >
                         <TiPlus />
 
-                        <a href="#" className=" ml-2 hover:underline">
+                        <span className="ml-2 hover:underline cursor-pointer">
                           {lesson.name}
-                        </a>
+                        </span>
                       </li>
                     ))}
                   </ul>

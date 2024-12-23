@@ -191,7 +191,6 @@ export const deleteNote = async (token, id) => {
   return response.data;
 };
 
-
 export const enrollment = async (formData) => {
   const response = await axios.post(
     import.meta.env.VITE_API + "enrollCourse",

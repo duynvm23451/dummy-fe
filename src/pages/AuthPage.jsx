@@ -75,7 +75,7 @@ const AuthPage = () => {
             />
             <button
               type="submit"
-              className="uppercase hover:opacity-80 text-sm font-semibold w-full py-2.5 bg-theme-rjkhjkey5t4676yed mt-8 rounded-2xl text-white"
+              className="uppercase hover:opacity-80 text-sm font-semibold w-full py-2.5 bg-theme-red mt-8 rounded-2xl text-white"
             >
               {isLoginPage ? "đăng nhập" : "đăng kí"}
             </button>

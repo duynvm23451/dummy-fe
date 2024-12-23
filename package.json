@@ -17,7 +17,8 @@
     "react-router-dom": "^6.28.0",
     "react-slick": "^0.30.3",
     "react-toastify": "^10.0.6",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "tailwind-scrollbar-hide": "^2.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
