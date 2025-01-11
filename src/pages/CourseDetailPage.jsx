@@ -5,6 +5,8 @@ import {
   createNote,
   getCourseDetail,
   getLessonDetail,
+  getLoggedInUser,
+  updateLessonToComplete,
 } from "../utils/http";
 import useGetData from "../hooks/useGetData";
 import { MdOutlineArrowDropDown } from "react-icons/md";
@@ -14,6 +16,8 @@ import { FaStickyNote } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { formatDuration, formatSecondsToTime } from "../utils/helper";
+import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
+import { IoCheckmarkDoneCircle } from "react-icons/io5";
 
 const CourseDetailPage = () => {
   const params = useParams();
@@ -32,6 +36,20 @@ const CourseDetailPage = () => {
   const [modulesOpen, setModulesOpen] = useState([]);
 
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [isCompletedUpdated, setIsCompletedUpdated] = useState(false);
+
+  const queryParamsStudent = useMemo(
+    () => ({
+      token,
+      selectedLesson, // Include selectedLesson as a dependency
+    }),
+    [token, selectedLesson]
+  );
+
+  const { data: student, refetch: refetchStudent } = useGetData(
+    getLoggedInUser,
+    queryParamsStudent
+  );
 
   // Update modulesOpen when data is fetched
   useEffect(() => {
@@ -53,24 +71,47 @@ const CourseDetailPage = () => {
     }),
     [token, selectedLesson]
   );
+
   const { data: lesson } = useGetData(getLessonDetail, queryParamsLessons);
 
   useEffect(() => {
-    console.log("Fetched Lesson Data:", lesson);
-  }, [lesson]);
+    if (lesson) {
+      refetchStudent(); // Fetch student data again after getting the lesson
+    }
+  }, [lesson, refetchStudent, isCompletedUpdated]);
 
   const videoRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
 
   const handleTimeUpdate = () => {
+    const watchedPercentage =
+      (videoRef.current.currentTime / videoRef.current.duration) * 100;
+
+    if (watchedPercentage >= 90 && !isCompletedUpdated) {
+      updateCompletionStatus();
+    }
+
     if (videoRef.current) {
       setCurrentTime(videoRef.current.currentTime); // Update the current time in seconds
+    }
+  };
+
+  const updateCompletionStatus = async () => {
+    try {
+      await updateLessonToComplete(selectedLesson, token);
+      setIsCompletedUpdated(true);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update completion status", {
+        position: "bottom-right",
+      });
     }
   };
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.load(); // Reload the video source
+      setIsCompletedUpdated(false);
     }
   }, [lesson?.video_url]);
 
@@ -118,11 +159,6 @@ const CourseDetailPage = () => {
   };
 
   const handleSaveNote = async (lessonId, notedTime) => {
-    console.log(selectedColor);
-    console.log(noteContent);
-    console.log(lessonId);
-    console.log(notedTime);
-
     const params = {
       lesson_id: lessonId,
       token,
@@ -255,19 +291,37 @@ const CourseDetailPage = () => {
                     {module.lessons.length == 0 && (
                       <p>Chương này không có bài học nào</p>
                     )}
-                    {module.lessons.map((lesson) => (
-                      <li
-                        onClick={() => setSelectedLesson(lesson.id)}
-                        key={lesson.id}
-                        className="mb-2 flex items-center"
-                      >
-                        <TiPlus />
+                    {module.lessons.map((lesson) => {
+                      const studentLesson = student.student_lesson.find(
+                        (el) => el.lesson_id === lesson.id
+                      );
+                      return (
+                        <li
+                          onClick={() => setSelectedLesson(lesson.id)}
+                          key={lesson.id}
+                          className="mb-2 flex justify-between"
+                        >
+                          <div className="flex items-center">
+                            <TiPlus />
 
-                        <span className="ml-2 hover:underline cursor-pointer">
-                          {lesson.name}
-                        </span>
-                      </li>
-                    ))}
+                            <span className="ml-2 hover:underline cursor-pointer">
+                              {lesson.name}
+                            </span>
+                            {lesson.student_lesson.student_id == +"duy"}
+                          </div>
+                          {!studentLesson && (
+                            <IoCheckmarkDoneCircleOutline className="h-6 w-6" />
+                          )}
+                          {studentLesson &&
+                            studentLesson.is_completed === 0 && (
+                              <IoCheckmarkDoneCircleOutline className="h-6 w-6" />
+                            )}
+                          {studentLesson && studentLesson.is_completed == 1 && (
+                            <IoCheckmarkDoneCircle className="h-6 w-6" />
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </div>

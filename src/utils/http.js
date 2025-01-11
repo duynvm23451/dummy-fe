@@ -62,6 +62,7 @@ export const getCourseDetail = async (params) => {
 };
 
 export const getLessonDetail = async (params) => {
+  console.log(params);
   const response = await axios.get(
     import.meta.env.VITE_API + "lessons/" + params.id,
     {
@@ -88,7 +89,7 @@ export const addFavoriteLesson = async (token, id) => {
   return response.data;
 };
 
-export const createStudentLessons = async (params) => {
+export const createStudentLessons = async (formData, token) => {
   const response = await axios.put(
     import.meta.env.VITE_API + "studentLessons",
     formData,
@@ -198,6 +199,21 @@ export const enrollment = async (formData) => {
     {
       headers: {
         Authorization: "Bearer " + formData.token,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const updateLessonToComplete = async (lesson_id, token) => {
+  console.log(lesson_id, token);
+  const response = await axios.put(
+    import.meta.env.VITE_API + "studentLessons/complete",
+    { lesson_id }, // JSON body
+    {
+      headers: {
+        "Content-Type": "application/json", // Explicitly set Content-Type
+        Authorization: `Bearer ${token}`, // Authorization header
       },
     }
   );

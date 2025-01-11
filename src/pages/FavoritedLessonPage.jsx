@@ -66,12 +66,14 @@ const FavoritedLessonPage = () => {
           )}
           <ul className="grid grid-cols-4 gap-4 mt-6">
             {data.map((el) => (
-              <div className="px-6 py-4 border-2 border-theme-black bg-white rounded-lg">
-                <h2 className="text-xl font-semibold">
-                  {el.module.course.title} /
-                </h2>
-                <h3 className="text-lg font-semibold">{el.module.name} /</h3>
-                <h4 className="hover:underline cursor-pointer">{el.name}</h4>
+              <div className="px-6 py-4 border-2 flex flex-col justify-between border-theme-black bg-white rounded-lg">
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    {el.module.course.title} /
+                  </h2>
+                  <h3 className="text-lg font-semibold">{el.module.name} /</h3>
+                  <h4 className="hover:underline cursor-pointer">{el.name}</h4>
+                </div>
                 <button
                   onClick={() => navigate("/courses/" + el.module.course_id)}
                   className="border-2 mt-4 w-full rounded-md border-theme-black font-medium py-1.5 bg-theme-beige"
